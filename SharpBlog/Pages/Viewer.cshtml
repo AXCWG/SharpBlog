@@ -1,0 +1,138 @@
+@page "/Viewer/{Id}"
+@using Ganss.Xss
+@using Markdig
+@model SharpBlog.Pages.Viewer
+@if (Model.Article is not null)
+{
+    ViewData["Title"] = Model.Article.Title;
+    var pipeline = new MarkdownPipelineBuilder().Build();
+    var rawHtml = Markdown.ToHtml(Model.Article.Content, pipeline);
+    var sanitizer = new HtmlSanitizer();
+    var tbRender = sanitizer.Sanitize(rawHtml);
+    <style>
+        /* ===== 论文版式：只作用于本页，不动 _Layout / site.css ===== */
+        .paper-stage {
+            padding: 1.5rem 1rem 4rem;
+        }
+
+        .paper {
+            box-sizing: border-box;
+            width: 210mm;                    /* A4 宽 */
+            max-width: 100%;
+            min-height: 297mm;               /* A4 高 */
+            margin: 0 auto;
+            margin-top: 3rem;                /* 与 .mt-5 同值：Bootstrap 缺失时兜底 */
+            padding: 25mm 25mm 25mm 30mm;    /* 国标页边距：上25 下25 左30 右25 (mm) */
+            color: #111;
+            border: 1px solid #d0d0d0;       /* 纸张边框 */
+
+            /* Times New Roman 管西文，国标宋体管汉字 */
+            /*font-family: "Times New Roman", "SimSun", "宋体", "Songti SC", "STSong",*/
+            /*             "Noto Serif CJK SC", "Source Han Serif SC", serif;*/
+            font-size: 12pt;                 /* 小四 */
+            line-height: 1.5;                /* 1.5 倍行距 */
+            text-align: justify;
+            text-justify: inter-ideograph;
+            font-kerning: normal;
+            -webkit-font-smoothing: antialiased;
+        }
+        h1,h2,h3,h4,h5,h6 {
+            text-align: center;
+        }
+        
+        .paper-body p {
+            margin: 0;                       /* 中文论文段间不空行，靠首行缩进 */
+            text-indent: 2em;
+            text-align: justify;
+            text-justify: inter-ideograph;
+            orphans: 2;
+            widows: 2;
+        }
+
+        .paper-keywords {
+            /*margin: 0 0 1.2em;               !* 副标题：贴住主标题，与正文拉开一档 *!*/
+            text-indent: 0;
+            font-size: 15pt;                 /* 小三：副标题字号 */
+            line-height: 1.5;
+        }
+
+        .paper-nav {
+            display: flex;
+            justify-content: start;
+            margin-top: .5rem;               /* 与 .mt-2 同值：Bootstrap 缺失时兜底 */
+        }
+        
+        
+
+        @@media (max-width: 820px) {
+            .paper-stage { padding: .75rem; }
+            .paper {
+                width: auto;                 /* 窄屏不再按 A4 定宽，避免横向溢出 */
+                max-width: 100%;
+                min-height: 0;
+                padding: 1.25rem 1rem;
+                font-size: 11pt;
+            }
+            .paper-title { font-size: 18pt; }
+        }
+
+        /* @@page 必须写在顶层，嵌进 @@media 里整段会被浏览器丢掉 */
+        @@page {
+            size: A4;
+            margin: 25mm 25mm 25mm 30mm;     /* 打印页边距：上25 右25 下25 左30 */
+        }
+
+        @@media print {
+            html, body { background: #fff !important; margin: 0 !important; }
+            /* _Layout 里的 .container 自带 12px padding，会破坏 @@page 的左右页边距 */
+            .container, .container-md {
+                max-width: none !important;
+                padding: 0 !important;
+                margin: 0 !important;
+            }
+            .paper-stage { padding: 0 !important; }
+            .paper {
+                width: auto;
+                min-height: 0;
+                margin: 0 !important;        /* 压掉 .mt-5 的 !important */
+                padding: 0;                  /* 页边距交给 @@page，避免双重留白 */
+                border: 0;
+            }
+            .paper-nav { display: none; }
+        }
+    </style>
+    
+    <div class="paper-stage">
+        <div class="paper-nav mt-2">
+            <a asp-page="Index">返回</a>
+        </div>
+
+        <article class="paper mt-5 d-block">
+                <h1 class="paper-title" id="title">@Model.Article.Title</h1>
+                @if (Model.Article.Tags.Count > 0)
+                {
+                    <div class="d-flex flex-wrap flex-row justify-content-center gap-2" style="margin: 0 0 1.2em;" id="tag-container">
+                    
+                        @foreach (var articleTag in Model.Article.Tags)
+                        {
+                            <a class="paper-keywords" asp-page="Group" asp-route-tagname="@articleTag">@articleTag</a>
+                        }
+                    
+                    </div>
+                }
+                <div class="paper-body">
+                    @Html.Raw(tbRender)
+                </div>
+            
+        </article>
+    </div>
+}
+else
+{
+    <partial name="UserError" model="@(new UserError{Reason="Page Not Found. "})"/>
+}
+
+@section Scripts
+{
+ 
+}

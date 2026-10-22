@@ -1,0 +1,3 @@
+[submodule "JsonPropertyAttribute"]
+	path = JsonPropertyAttribute
+	url = https://github.com/AXCWG/JsonPropertyAttribute.git

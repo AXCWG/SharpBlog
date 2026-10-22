@@ -1,0 +1,23 @@
+@page "/Group/{TagName:required}"
+@model SharpBlog.Pages.Group
+
+@if (Model.Error)
+{
+    <partial name="UserError" model="@(new UserError{Reason=Model.TagName is null ? "缺少Tag参数" : $"未找到Tag: {Model.TagName}"})"/>
+}
+else
+{
+    <div class="container">
+        <div class="mt-5">
+            <a asp-page="Index">返回</a>
+        </div>
+        <h1>All tag "@Model.TagName" of @CommonSettings.BlogName</h1>
+        <ul>
+            @foreach (var article in Model.ArticlesFallsIntoTag)
+            {
+                <li><a asp-page="Viewer" asp-route-id="@article.Id">@article.Title</a></li>
+            }
+        </ul>
+    </div>
+}
+

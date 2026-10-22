@@ -1,0 +1,27 @@
+﻿@page
+@using Microsoft.EntityFrameworkCore
+@model IndexModel
+@inject BlogDbContext Db
+@{
+    ViewData["Title"] = "Home page";
+    var i = Db.Articles.AsNoTracking().Where(x => !x.Unlisted).ToList();
+}
+
+<div class="container">
+    <h1>Index of @CommonSettings.BlogName</h1>
+    <ul>
+        @foreach (var tag in i.SelectMany(i=>i.Tags).ToHashSet())
+        {
+            <li>
+                @tag
+                <ul>
+                    @foreach (var article in i.Where(i => i.Tags.Contains(tag) && !i.Unlisted))
+                    {
+                        <li><a asp-page="Viewer" asp-all-route-data="@(new Dictionary<string, string>{{"Id", article.Id.ToString()}})">@article.Title</a></li>
+                    }
+                </ul>
+                </li>
+        }
+        
+    </ul>
+</div>

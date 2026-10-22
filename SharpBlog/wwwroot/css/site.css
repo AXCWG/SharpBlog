@@ -1,0 +1,22 @@
+h1 {
+    margin:1em 0 0.4em 0;
+    font-family: inherit;
+    font-size: 22pt;                 /* 二号 */
+    font-weight: 700;
+    line-height: 1.35;
+    letter-spacing: .04em;
+    text-indent: 0;
+}
+h2, h3, h4, h5, h6 {
+    margin:1em 0 0.4em 0;
+    font-family: inherit;
+    font-size: 15pt;                 /* 小三：副标题字号 */
+    font-weight: 700;
+    line-height: 1.35;
+    letter-spacing: .04em;
+    text-indent: 0;
+}
+body{
+    font-family: "Times New Roman", "SimSun", "宋体", "Songti SC", "STSong",
+    "Noto Serif CJK SC", "Source Han Serif SC", serif;
+}

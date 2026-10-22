@@ -1,0 +1,29 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <PropertyGroup>
+        <TargetFramework>net11.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="AXExpansion" Version="1.8.0" />
+      <PackageReference Include="HtmlSanitizer" Version="9.2.1039" />
+      <PackageReference Include="Markdig" Version="1.4.2" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.13">
+        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        <PrivateAssets>all</PrivateAssets>
+      </PackageReference>
+      <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="10.0.13" />
+      <PackageReference Include="Z.Expressions.Eval" Version="6.3.15" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Migrations\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\JsonPropertyAttribute\JsonProperty\JsonProperty.csproj" />
+    </ItemGroup>
+
+</Project>
