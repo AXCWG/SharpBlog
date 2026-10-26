@@ -1,0 +1,219 @@
+@using Ganss.Xss
+@using Markdig
+@model SharpBlog.Mvc.Models.ViewerViewModel
+@{
+    
+    ViewData["Title"] = Model.Article.Title;
+    var pipeline = new MarkdownPipelineBuilder().Build();
+    var rawHtml = Markdown.ToHtml(Model.Article.Content, pipeline);
+    var sanitizer = new HtmlSanitizer();
+    var tbRender = sanitizer.Sanitize(rawHtml);
+}
+    <style>
+        /* ===== 论文版式：只作用于本页，不动 _Layout / site.css ===== */
+        .paper-stage {
+            padding-top: 0;                  /* 左右留白沿用 .page-container */
+            padding-bottom: 4rem;
+        }
+
+        .paper {
+            box-sizing: border-box;
+            width: 210mm;                    /* A4 宽 */
+            max-width: 100%;
+            min-height: 297mm;               /* A4 高 */
+            margin: 0 auto;
+            margin-top: 3rem;                /* 与 .mt-5 同值：Bootstrap 缺失时兜底 */
+            padding: 25mm 25mm 25mm 30mm;    /* 国标页边距：上25 下25 左30 右25 (mm) */
+            color: #111;
+            border: 1px solid #d0d0d0;       /* 纸张边框 */
+
+            /* Times New Roman 管西文，国标宋体管汉字 */
+            /*font-family: "Times New Roman", "SimSun", "宋体", "Songti SC", "STSong",*/
+            /*             "Noto Serif CJK SC", "Source Han Serif SC", serif;*/
+            font-size: 12pt;                 /* 小四 */
+            line-height: 1.5;                /* 1.5 倍行距 */
+            text-align: justify;
+            text-justify: inter-ideograph;
+            font-kerning: normal;
+            -webkit-font-smoothing: antialiased;
+        }
+        h1,h2,h3,h4,h5,h6 {
+            text-align: center;
+        }
+        
+        .paper-body p {
+            margin: 0;                       /* 中文论文段间不空行，靠首行缩进 */
+            text-indent: 2em;
+            text-align: justify;
+            text-justify: inter-ideograph;
+            orphans: 2;
+            widows: 2;
+        }
+
+        .paper-keywords {
+            /*margin: 0 0 1.2em;               !* 副标题：贴住主标题，与正文拉开一档 *!*/
+            text-indent: 0;
+            font-size: 15pt;                 /* 小三：副标题字号 */
+            line-height: 1.5;
+        }
+
+        
+        
+
+        @@media (max-width: 820px) {
+            .paper-stage { padding-bottom: 2rem; }
+            .paper {
+                width: auto;                 /* 窄屏不再按 A4 定宽，避免横向溢出 */
+                max-width: 100%;
+                min-height: 0;
+                padding: 1.25rem 1rem;
+                font-size: 11pt;
+            }
+            .paper-title { font-size: 18pt; }
+        }
+
+        /* @@page 必须写在顶层，嵌进 @@media 里整段会被浏览器丢掉 */
+        @@page {
+            size: A4;
+            margin: 25mm 25mm 25mm 30mm;     /* 打印页边距：上25 右25 下25 左30 */
+        }
+
+
+        /* ===== 评论区：跟随纸面风格（宋体 / 细边框 / 无圆角无阴影） ===== */
+        .comment-form {
+            display: flex;
+            flex-direction: column;
+            gap: .6rem;
+            margin-top: 1rem;
+            padding: 1rem 1.1rem;
+            border: 1px solid #d0d0d0;
+            background: transparent;
+        }
+
+        .comment-input {
+            box-sizing: border-box;
+            width: 100%;
+            padding: .45rem .6rem;
+            border: 1px solid #d0d0d0;
+            border-radius: 0;
+            background: transparent;
+            color: #111;
+            font: inherit;
+            font-size: 12pt;
+            line-height: 1.5;
+        }
+
+        .comment-input::placeholder { color: #9a9a9a; }
+
+        .comment-input:focus {
+            border-color: #6b6b6b;
+            outline: none;
+        }
+
+        .comment-submit {
+            align-self: flex-end;
+            padding: .3rem 1.8rem;
+            border: 1px solid #1b1b1f;
+            border-radius: 0;
+            background: #1b1b1f;
+            color: #fff;
+            font: inherit;
+            font-size: 12pt;
+            line-height: 1.4;
+            cursor: pointer;
+        }
+
+        .comment-submit:hover { background: #000; }
+        .comment-submit:active { background: #000; }
+
+        @@media print {
+            .comment-form { display: none; }
+        }
+
+        @@media print {
+            html, body { background: #fff !important; margin: 0 !important; }
+            /* _Layout 里的 .container 自带 12px padding，会破坏 @@page 的左右页边距 */
+            .container, .container-md {
+                max-width: none !important;
+                padding: 0 !important;
+                margin: 0 !important;
+            }
+            .paper-stage { padding: 0 !important; }
+            .paper {
+                width: auto;
+                min-height: 0;
+                margin: 0 !important;        /* 压掉 .mt-5 的 !important */
+                padding: 0;                  /* 页边距交给 @@page，避免双重留白 */
+                border: 0;
+            }
+            .page-nav { display: none; }
+        }
+    </style>
+    
+    <div class="paper-stage page-container">
+        <div class="page-nav">
+            <a asp-action="Index">返回</a>
+        </div>
+
+        <article class="paper mt-5 d-block">
+            <h1 class="paper-title" id="title">@Model.Article.Title</h1>
+            @if (Model.Article.Tags.Count > 0)
+            {
+                <div class="d-flex flex-wrap flex-row justify-content-center gap-2" style="margin: 0 0 1.2em;" id="tag-container">
+                    
+                    @foreach (var articleTag in Model.Article.Tags)
+                    {
+                        <a class="paper-keywords" asp-action="Group" asp-route-group="@articleTag">@articleTag</a>
+                    }
+                    
+                </div>
+            }
+            <div class="paper-body">
+                @Html.Raw(tbRender)
+            </div>
+            
+        </article>
+        
+    </div>
+    <div class="mx-auto" style="width: 210mm;                    /* A4 宽 */max-width: 100%;">
+        <div>回复</div>
+        <form class="comment-form" method="post" asp-page-handler="AddComment" >
+            <input name="AddComment.Name" class="comment-input" placeholder="名字"/>
+            <input name="AddComment.Content" class="comment-input" placeholder="评论"/>
+            <button class="comment-submit" type="submit">发送</button>
+        </form>
+        @if (Model.Article.Comments.Count == 0)
+        {
+            <div class="text-center">暂无评论</div>
+        }
+        else
+        {
+            <div class="px-3 mt-2 border border-secondary-subtle border-1 py-3">
+                @foreach (var articleComment in Model.Article.Comments)
+                {
+                    <div class="d-flex gap-2">
+                        <div>
+                            @articleComment.Username
+                        </div>
+                        <div>
+                            @articleComment.Created
+                        </div>
+                    </div>
+                    <div>
+                        @articleComment.Content
+                    </div>
+                    <hr/>
+                }
+            </div>
+            
+        }
+    </div>
+
+
+@*    <partial name="UserError" model="@(new UserError{Reason="Page Not Found. "})"/> *@
+
+
+@section Scripts
+{
+ 
+}

@@ -1,0 +1,20 @@
+@using SharpBlog
+@inject BlogDbContext DbContext
+@model string
+@{
+    
+}
+    <div class="container page-container">
+        <div class="page-nav">
+            <a asp-action="Index">返回主页</a>
+        </div>
+        <h1>All tag "@Model" of @CommonSettings.BlogName</h1>
+        <ul>
+            @foreach (var article in DbContext.Articles.AsEnumerable().Where(i=>i.Tags.Contains(Model)))
+            {
+                <li><a asp-action="Viewer" asp-route-id="@article.Id">@article.Title</a></li>
+            }
+        </ul>
+    </div>
+
+

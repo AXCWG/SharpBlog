@@ -60,4 +60,5 @@ public record Comment
     public required string? Username { get; set; }
     public int ArticleId { get; set; }
     public Article Article { get; set; } = null!; 
+    public DateTime Created { get; set; }
 }

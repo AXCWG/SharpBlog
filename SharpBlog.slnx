@@ -1,4 +1,5 @@
 <Solution>
   <Project Path="JsonPropertyAttribute/JsonProperty/JsonProperty.csproj" />
+  <Project Path="SharpBlog.Mvc/SharpBlog.Mvc.csproj" />
   <Project Path="SharpBlog/SharpBlog.csproj" />
 </Solution>

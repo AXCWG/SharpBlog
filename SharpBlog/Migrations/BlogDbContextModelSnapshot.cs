@@ -49,7 +49,7 @@ namespace SharpBlog.Migrations
 
                     b.HasIndex("Tags");
 
-                    b.ToTable("Articles", (string)null);
+                    b.ToTable("Articles");
                 });
 
             modelBuilder.Entity("SharpBlog.Comment", b =>
@@ -65,6 +65,9 @@ namespace SharpBlog.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("Username")
                         .HasColumnType("TEXT");
 
@@ -74,7 +77,7 @@ namespace SharpBlog.Migrations
 
                     b.HasIndex("Username");
 
-                    b.ToTable("Comments", (string)null);
+                    b.ToTable("Comments");
                 });
 
             modelBuilder.Entity("SharpBlog.Comment", b =>

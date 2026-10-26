@@ -1,0 +1,30 @@
+﻿@using Microsoft.EntityFrameworkCore
+@using SharpBlog
+@inject BlogDbContext Db
+@{
+    ViewData["Title"] = "Home page";
+    var i = Db.Articles.AsNoTracking().Where(x => !x.Unlisted).ToList();
+}
+
+<div class="container">
+    <h1>Index of @CommonSettings.BlogName</h1>
+    <ul>
+        @foreach (var tag in i.SelectMany(i=>i.Tags).ToHashSet())
+        {
+            <li>
+                @tag
+                <ul>
+                    @foreach (var article in CommonSettings.ConcatCount switch
+                              {
+                                  {} l => i.Where(i => i.Tags.Contains(tag) && !i.Unlisted).OrderByDescending(i=>i.Created).TakeLast(l),
+                                  _ => i.Where(i => i.Tags.Contains(tag) && !i.Unlisted).OrderByDescending(i=>i.Created)
+                              })
+                    {
+                        <li><a asp-action="Viewer" asp-route-id="@article.Id">@article.Title</a></li>
+                    }
+                </ul>
+                </li>
+        }
+        
+    </ul>
+</div>

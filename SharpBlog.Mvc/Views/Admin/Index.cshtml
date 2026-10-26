@@ -1,0 +1,991 @@
+@model SharpBlog.Mvc.Models.AdminViewModel
+@using SharpBlog
+@{
+    ViewData["Title"] = "控制台";
+}
+
+<style>
+    /* ===== 控制台：只作用于本页 ===== */
+    .admin {
+        max-width: 1120px;
+        margin: 1.5rem auto 4rem;
+        padding: 0 1rem;
+        color: #1b1b1f;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+                     "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    }
+
+    .admin-head {
+        display: flex;
+        flex-wrap: wrap;
+        gap: .75rem;
+        align-items: flex-end;
+        justify-content: space-between;
+    }
+
+    .admin-head h1 {
+        font-family: inherit;
+        font-size: 1.6rem;
+        font-weight: 700;
+        letter-spacing: 0;
+        margin: 0 0 .3rem;
+        text-align: left;
+    }
+
+    .admin-sub {
+        margin: 0;
+        color: #6b6b76;
+        font-size: .88rem;
+    }
+
+    .admin-head-actions {
+        display: flex;
+        gap: .5rem;
+    }
+
+    .admin-note {
+        margin: 1rem 0 0;
+        padding: .55rem .8rem;
+        border: 1px solid #cfe3d3;
+        border-radius: 6px;
+        background: #f1f8f2;
+        color: #256b39;
+        font-size: .86rem;
+    }
+
+    .admin-tabs {
+        display: flex;
+        gap: .25rem;
+        margin-top: 1.25rem;
+        border-bottom: 1px solid #e3e3e8;
+    }
+
+    .admin-tab {
+        padding: .55rem 1rem;
+        border: 1px solid transparent;
+        border-bottom: 0;
+        border-radius: 6px 6px 0 0;
+        color: #5a5a66;
+        font-size: .9rem;
+        text-decoration: none;
+    }
+
+    .admin-tab:hover { background: #f6f6f9; color: #2b2b33; }
+
+    .admin-tab.active {
+        margin-bottom: -1px;
+        border-color: #e3e3e8;
+        background: #fff;
+        color: #1b1b1f;
+        font-weight: 600;
+    }
+
+    .admin-settings {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: .88rem;
+    }
+
+    .admin-settings th,
+    .admin-settings td {
+        padding: .6rem .5rem;
+        border-top: 1px solid #eeeef3;
+        text-align: left;
+        vertical-align: top;
+    }
+
+    .admin-settings thead th {
+        border-top: 0;
+        color: #6b6b76;
+        font-size: .78rem;
+        font-weight: 600;
+    }
+
+    .admin-settings code {
+        padding: .1em .35em;
+        border-radius: 3px;
+        background: #f2f2f6;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+        font-size: .85em;
+    }
+
+    .admin-settings-input {
+        box-sizing: border-box;
+        width: 100%;
+        max-width: 18rem;
+        padding: .45rem .55rem;
+        border: 1px solid #d5d5dd;
+        border-radius: 6px;
+        background: #fcfcfd;
+        color: inherit;
+        font: inherit;
+        font-size: .86rem;
+    }
+
+    .admin-settings-input:focus {
+        border-color: #9db4ff;
+        outline: 2px solid #9db4ff;
+        outline-offset: 1px;
+    }
+
+    .admin-settings-type {
+        margin-top: .2rem;
+        color: #8a8a95;
+        font-size: .72rem;
+    }
+
+    .admin-settings .admin-settings-value {
+        font-variant-numeric: tabular-nums;
+    }
+
+    .admin-settings-card .admin-hint { margin-top: 1rem; }
+
+    .admin-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 260px) minmax(0, 1fr);
+        gap: 1.25rem;
+        align-items: start;
+        margin-top: 1.25rem;
+    }
+
+    .admin-card {
+        border: 1px solid #e3e3e8;
+        border-radius: 8px;
+        padding: 1.25rem;
+        background: #fff;
+    }
+
+    .admin-main {
+        display: flex;
+        flex-direction: column;
+        gap: 1.25rem;
+    }
+
+    .admin-card h2 {
+        font-family: inherit;
+        font-size: 1rem;
+        font-weight: 700;
+        letter-spacing: 0;
+        margin: 0 0 1rem;
+        text-align: left;
+    }
+
+    .admin label {
+        display: block;
+        margin: .9rem 0 .35rem;
+        font-size: .84rem;
+        color: #4a4a55;
+    }
+
+    .admin input[type="text"],
+    .admin input[type="number"],
+    .admin textarea {
+        box-sizing: border-box;
+        width: 100%;
+        padding: .55rem .65rem;
+        border: 1px solid #d5d5dd;
+        border-radius: 6px;
+        background: #fcfcfd;
+        color: inherit;
+        font: inherit;
+        font-size: .9rem;
+    }
+
+    .admin input[readonly] {
+        background: #f4f4f7;
+        color: #6b6b76;
+    }
+
+    .admin textarea {
+        min-height: 16rem;
+        line-height: 1.6;
+        resize: vertical;
+    }
+
+    .admin input:focus,
+    .admin textarea:focus {
+        border-color: #9db4ff;
+        outline: 2px solid #9db4ff;
+        outline-offset: 1px;
+    }
+
+    .admin .admin-check {
+        display: flex;
+        align-items: center;
+        gap: .5rem;
+        margin: 1.1rem 0 0;
+        font-size: .86rem;
+        color: #3c3c46;
+        cursor: pointer;
+    }
+
+    .admin .admin-check input[type="checkbox"] {
+        width: 1rem;
+        height: 1rem;
+        margin: 0;
+        accent-color: #2b3a67;
+        cursor: pointer;
+    }
+
+    .admin .admin-chip {
+        display: inline-block;
+        margin-left: .35rem;
+        padding: .05rem .45rem;
+        border: 1px solid #e6dcc3;
+        border-radius: 999px;
+        background: #fbf6e8;
+        color: #8a6d1f;
+        font-size: .72rem;
+        vertical-align: 1px;
+    }
+
+    .admin .admin-editor {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        gap: .75rem;
+        align-items: stretch;
+    }
+
+    .admin .admin-editor textarea {
+        min-height: 20rem;
+    }
+
+    .admin .admin-preview {
+        box-sizing: border-box;
+        min-height: 20rem;
+        max-height: 40rem;
+        overflow: auto;
+        padding: 1rem 1.1rem;
+        border: 1px solid #e3e3e8;
+        border-radius: 6px;
+        background: #fcfcfd;
+        color: #1b1b1f;
+        font-family: "Times New Roman", "SimSun", "宋体", "Songti SC", "STSong",
+                     "Noto Serif CJK SC", serif;
+        font-size: 12pt;
+        line-height: 1.5;
+        word-break: break-word;
+    }
+
+    .admin .admin-preview > :first-child { margin-top: 0; }
+
+    .admin .admin-preview p {
+        margin: 0 0 .6em;
+        text-indent: 2em;
+    }
+
+    .admin .admin-preview h1,
+    .admin .admin-preview h2,
+    .admin .admin-preview h3,
+    .admin .admin-preview h4,
+    .admin .admin-preview h5,
+    .admin .admin-preview h6 {
+        margin: 1em 0 .4em;
+        font-family: inherit;
+        font-weight: 700;
+        line-height: 1.3;
+        text-align: center;
+        letter-spacing: .04em;
+    }
+
+    .admin .admin-preview h1 { font-size: 22pt; }
+    .admin .admin-preview h2,
+    .admin .admin-preview h3,
+    .admin .admin-preview h4,
+    .admin .admin-preview h5,
+    .admin .admin-preview h6 { font-size: 15pt; }
+
+    .admin .admin-preview ul,
+    .admin .admin-preview ol {
+        margin: 0 0 .6em;
+        padding-left: 1.6em;
+    }
+
+    .admin .admin-preview li { text-indent: 0; }
+
+    .admin .admin-preview code {
+        padding: .1em .3em;
+        border-radius: 3px;
+        background: #f2f2f6;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+        font-size: .85em;
+    }
+
+    .admin .admin-preview pre {
+        margin: 0 0 .6em;
+        padding: .7rem .8rem;
+        overflow: auto;
+        border: 1px solid #e9e9ef;
+        border-radius: 6px;
+        background: #f6f6f9;
+    }
+
+    .admin .admin-preview pre code {
+        padding: 0;
+        background: none;
+    }
+
+    .admin .admin-preview blockquote {
+        margin: 0 0 .6em;
+        padding: .2em .9em;
+        border-left: 3px solid #d8d8e2;
+        color: #4a4a55;
+    }
+
+    .admin .admin-preview a { color: #2b3a67; }
+    .admin .admin-preview img { max-width: 100%; }
+    .admin .admin-preview hr { border: 0; border-top: 1px solid #e3e3e8; margin: 1em 0; }
+
+    .admin .admin-preview-empty {
+        margin: 0;
+        color: #8a8a95;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", sans-serif;
+        font-size: .85rem;
+    }
+
+    .admin .admin-meta {
+        display: flex;
+        flex-direction: column;
+        gap: .4rem;
+    }
+
+    .admin .admin-meta-row {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr) auto;
+        gap: .4rem;
+        align-items: center;
+    }
+
+    .admin .admin-meta-row input[type="text"] {
+        padding: .45rem .55rem;
+        font-size: .86rem;
+    }
+
+    .admin .admin-meta-remove {
+        padding: .3rem .6rem;
+        border: 1px solid #e0e0e6;
+        border-radius: 6px;
+        background: #fff;
+        color: #8a3b34;
+        font-size: .9rem;
+        line-height: 1;
+        cursor: pointer;
+    }
+
+    .admin .admin-meta-remove:hover {
+        border-color: #e2b6b2;
+        background: #fdf1f0;
+    }
+
+    .admin .admin-meta-actions { margin-top: .5rem; }
+
+    .admin .admin-meta-actions button {
+        padding: .35rem .9rem;
+        font-size: .82rem;
+    }
+
+    .admin .admin-hint {
+        margin: .35rem 0 0;
+        color: #8a8a95;
+        font-size: .78rem;
+    }
+
+    .admin .admin-error {
+        display: block;
+        margin-top: .3rem;
+        color: #b3261e;
+        font-size: .8rem;
+    }
+
+    .admin .admin-summary {
+        margin: 0 0 .75rem;
+        padding: .6rem .75rem;
+        border: 1px solid #f2c2bd;
+        border-radius: 6px;
+        background: #fdf1f0;
+        color: #b3261e;
+        font-size: .84rem;
+    }
+
+    .admin .admin-summary:empty { display: none; }
+
+    .admin .admin-actions {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: .6rem;
+        margin-top: 1.3rem;
+    }
+
+    .admin .admin-actions form { margin: 0; }
+
+    .admin button {
+        padding: .5rem 1.2rem;
+        border: 1px solid #d5d5dd;
+        border-radius: 6px;
+        background: #fff;
+        color: #2b2b33;
+        font: inherit;
+        font-size: .86rem;
+        cursor: pointer;
+    }
+
+    .admin button:hover { background: #f4f4f7; }
+
+    .admin button[type="submit"].primary {
+        border-color: #2b3a67;
+        background: #2b3a67;
+        color: #fff;
+    }
+
+    .admin button[type="submit"].primary:hover { background: #22305a; }
+
+    .admin button.danger {
+        border-color: #e2b6b2;
+        color: #a4241c;
+    }
+
+    .admin button.danger:hover { background: #fdf1f0; }
+
+    .admin button.admin-link {
+        padding: 0;
+        border: 0;
+        background: none;
+        color: #8a3b34;
+        font-size: .78rem;
+        cursor: pointer;
+        text-decoration: underline;
+    }
+
+    .admin button.admin-link:hover { background: none; color: #b3261e; }
+
+    .admin-btn {
+        display: inline-block;
+        padding: .5rem 1.1rem;
+        border: 1px solid #2b3a67;
+        border-radius: 6px;
+        background: #2b3a67;
+        color: #fff;
+        font-size: .86rem;
+        text-decoration: none;
+    }
+
+    .admin-btn:hover { background: #22305a; color: #fff; }
+
+    .admin-btn.ghost {
+        border-color: #d5d5dd;
+        background: #fff;
+        color: #2b2b33;
+    }
+
+    .admin-btn.ghost:hover { background: #f4f4f7; color: #2b2b33; }
+
+    .admin-list {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        max-height: 34rem;
+        overflow: auto;
+    }
+
+    .admin-list li {
+        border-top: 1px solid #eeeef3;
+    }
+
+    .admin-list li:first-child { border-top: 0; }
+
+    .admin-list li.active { background: #f5f7ff; }
+
+    .admin-list a {
+        display: block;
+        padding: .6rem .5rem;
+        color: #2b3a67;
+        font-size: .9rem;
+        text-decoration: none;
+        line-height: 1.35;
+    }
+
+    .admin-list a:hover { background: #f7f7fb; }
+
+    .admin-id {
+        margin-right: .4rem;
+        color: #9a9aa4;
+        font-size: .76rem;
+        font-variant-numeric: tabular-nums;
+    }
+
+    .admin-count {
+        float: right;
+        color: #9a9aa4;
+        font-size: .74rem;
+    }
+
+    .admin-muted {
+        margin: 0;
+        color: #8a8a95;
+        font-size: .86rem;
+    }
+
+    .admin-comments {
+        list-style: none;
+        margin: 0 0 1.25rem;
+        padding: 0;
+    }
+
+    .admin-comments li {
+        padding: .7rem 0;
+        border-top: 1px solid #eeeef3;
+    }
+
+    .admin-comments li:first-child { border-top: 0; padding-top: 0; }
+
+    .admin-comment-head {
+        display: flex;
+        align-items: center;
+        gap: .5rem;
+        font-size: .84rem;
+        color: #4a4a55;
+    }
+
+    .admin-comment-head strong { font-weight: 600; }
+
+    .admin-comment-head form { margin: 0 0 0 auto; }
+
+    .admin-comment-body {
+        margin: .35rem 0 0;
+        font-size: .88rem;
+        line-height: 1.6;
+        white-space: pre-wrap;
+        word-break: break-word;
+    }
+
+    .admin .admin-comment-input {
+        min-height: 5.5rem;
+    }
+
+    @@media (max-width: 860px) {
+        .admin-tabs {
+        display: flex;
+        gap: .25rem;
+        margin-top: 1.25rem;
+        border-bottom: 1px solid #e3e3e8;
+    }
+
+    .admin-tab {
+        padding: .55rem 1rem;
+        border: 1px solid transparent;
+        border-bottom: 0;
+        border-radius: 6px 6px 0 0;
+        color: #5a5a66;
+        font-size: .9rem;
+        text-decoration: none;
+    }
+
+    .admin-tab:hover { background: #f6f6f9; color: #2b2b33; }
+
+    .admin-tab.active {
+        margin-bottom: -1px;
+        border-color: #e3e3e8;
+        background: #fff;
+        color: #1b1b1f;
+        font-weight: 600;
+    }
+
+    .admin-settings {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: .88rem;
+    }
+
+    .admin-settings th,
+    .admin-settings td {
+        padding: .6rem .5rem;
+        border-top: 1px solid #eeeef3;
+        text-align: left;
+        vertical-align: top;
+    }
+
+    .admin-settings thead th {
+        border-top: 0;
+        color: #6b6b76;
+        font-size: .78rem;
+        font-weight: 600;
+    }
+
+    .admin-settings code {
+        padding: .1em .35em;
+        border-radius: 3px;
+        background: #f2f2f6;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+        font-size: .85em;
+    }
+
+    .admin-settings-input {
+        box-sizing: border-box;
+        width: 100%;
+        max-width: 18rem;
+        padding: .45rem .55rem;
+        border: 1px solid #d5d5dd;
+        border-radius: 6px;
+        background: #fcfcfd;
+        color: inherit;
+        font: inherit;
+        font-size: .86rem;
+    }
+
+    .admin-settings-input:focus {
+        border-color: #9db4ff;
+        outline: 2px solid #9db4ff;
+        outline-offset: 1px;
+    }
+
+    .admin-settings-type {
+        margin-top: .2rem;
+        color: #8a8a95;
+        font-size: .72rem;
+    }
+
+    .admin-settings .admin-settings-value {
+        font-variant-numeric: tabular-nums;
+    }
+
+    .admin-settings-card .admin-hint { margin-top: 1rem; }
+
+    .admin-grid { grid-template-columns: 1fr; }
+        .admin .admin-editor { grid-template-columns: 1fr; }
+        .admin .admin-preview { min-height: 10rem; max-height: 24rem; }
+        .admin-list { max-height: 16rem; }
+        .admin textarea { min-height: 12rem; }
+    }
+</style>
+
+<div class="admin">
+    <header class="admin-head">
+        <div>
+            <h1>控制台</h1>
+            <p class="admin-sub">
+                @(Model.Tab == "settings"
+                    ? "站点设置"
+                    : Model.IsEditing ? $"编辑文章 #{Model.Form.OriginalId}" : "新建文章") · @CommonSettings.BlogName
+            </p>
+        </div>
+        <div class="admin-head-actions">
+            <a class="admin-btn ghost" asp-controller="Index" asp-action="Index">返回首页</a>
+            <a class="admin-btn" asp-controller="Admin" asp-action="Index">新建文章</a>
+        </div>
+    </header>
+
+    @if (Model.Status is { Length: > 0 } status)
+    {
+        <div class="admin-note">@status</div>
+    }
+
+    <nav class="admin-tabs">
+        <a class="admin-tab @(Model.Tab == "articles" ? "active" : null)" asp-controller="Admin" asp-action="Index">文章</a>
+        <a class="admin-tab @(Model.Tab == "settings" ? "active" : null)" asp-controller="Admin" asp-action="Index" asp-route-tab="settings">设置</a>
+    </nav>
+
+    @if (Model.Tab == "articles")
+    {
+    <div class="admin-grid">
+        <aside class="admin-card">
+            <h2>文章（@Model.Articles.Count）</h2>
+
+            @if (Model.Articles.Count == 0)
+            {
+                <p class="admin-muted">还没有文章。</p>
+            }
+            else
+            {
+                <ul class="admin-list">
+                    @foreach (var item in Model.Articles)
+                    {
+                        var active = Model.IsEditing && Model.Form.OriginalId == item.Id;
+                        <li class="@(active ? "active" : null)">
+                            <a asp-controller="Admin" asp-action="Index" asp-route-id="@item.Id">
+                                <span class="admin-id">#@item.Id</span>@item.Title
+                                @if (item.Unlisted)
+                                {
+                                    <span class="admin-chip">未列出</span>
+                                }
+                                @if (item.CommentCount > 0)
+                                {
+                                    <span class="admin-count">@item.CommentCount 评</span>
+                                }
+                            </a>
+                        </li>
+                    }
+                </ul>
+            }
+        </aside>
+
+        <div class="admin-main">
+            <section class="admin-card">
+                <h2>@(Model.IsEditing ? $"编辑文章 #{Model.Form.OriginalId}" : "新建文章")</h2>
+
+                <form method="post" asp-controller="Admin" asp-action="Save">
+                    <div asp-validation-summary="ModelOnly" class="admin-summary"></div>
+
+                    <input type="hidden" asp-for="Form.OriginalId" />
+
+                    <label asp-for="Form.Title"></label>
+                    <input asp-for="Form.Title" type="text" autocomplete="off" placeholder="给文章起个标题"/>
+                    <span asp-validation-for="Form.Title" class="admin-error"></span>
+
+                    <label asp-for="Form.Tags"></label>
+                    <input asp-for="Form.Tags" type="text" autocomplete="off" placeholder="csharp, sqlite, markdown" autocorrect="off" spellcheck="false" autocapitalize="off" aria-autocomplete="none" />
+                    <p class="admin-hint">重复的标签会自动去掉。</p>
+                    <span asp-validation-for="Form.Tags" class="admin-error"></span>
+
+                    <label class="admin-check" asp-for="Form.Unlisted">
+                        <input asp-for="Form.Unlisted" type="checkbox" data-val="false"/>
+                        <span>未列出（不在首页和标签页显示，仍可通过直链访问）</span>
+                    </label>
+
+                    <label asp-for="Form.Content"></label>
+                    <div class="admin-editor">
+                        <textarea asp-for="Form.Content" placeholder="# 标题&#10;&#10;正文支持 Markdown。"></textarea>
+                        <div class="admin-preview" id="md-preview" aria-live="polite"></div>
+                    </div>
+                    <p class="admin-hint">左边写，右边实时预览；发布时仍由服务端 Markdig 渲染。</p>
+                    <span asp-validation-for="Form.Content" class="admin-error"></span>
+
+                    <label>其他元数据</label>
+                    <div class="admin-meta" id="meta-rows">
+                        @for (var i = 0; i < Model.Form.Metadata.Count; i++)
+                        {
+                            <div class="admin-meta-row">
+                                <input type="text" data-field="Key" name="Form.Metadata[@i].Key"
+                                       value="@Model.Form.Metadata[i].Key" placeholder="key"/>
+                                <input type="text" data-field="Value" name="Form.Metadata[@i].Value"
+                                       value="@Model.Form.Metadata[i].Value" placeholder="value"/>
+                                <button type="button" class="admin-meta-remove"
+                                        title="删除这一项" aria-label="删除这一项">×</button>
+                            </div>
+                        }
+                    </div>
+                    <div class="admin-meta-actions">
+                        <button type="button" id="meta-add">+ 添加一项</button>
+                    </div>
+                    <p class="admin-hint">想加多少行都行；key 留空的行会被忽略，同名的以最后一行为准。</p>
+
+                    <div class="admin-actions">
+                        <button type="submit" class="primary">@(Model.IsEditing ? "保存修改" : "发布")</button>
+                        @if (Model.IsEditing)
+                        {
+                            <a class="admin-btn ghost" asp-controller="Index" asp-action="Viewer" asp-route-id="@Model.Form.OriginalId">查看</a>
+                        }
+                    </div>
+                </form>
+
+                @if (Model.IsEditing)
+                {
+                    <div class="admin-actions">
+                        <form method="post" asp-controller="Admin" asp-action="DuplicateArticle">
+                            <input type="hidden" name="id" value="@Model.Form.OriginalId"/>
+                            <button type="submit">另存为副本</button>
+                        </form>
+
+                        <form method="post" asp-controller="Admin" asp-action="DeleteArticle"
+                              onsubmit="return confirm('删除文章 #@Model.Form.OriginalId？它的评论也会一起删除。');">
+                            <input type="hidden" name="id" value="@Model.Form.OriginalId"/>
+                            <button type="submit" class="danger">删除文章</button>
+                        </form>
+                    </div>
+                }
+            </section>
+
+            @if (Model.IsEditing)
+            {
+                <section class="admin-card">
+                    <h2>评论（@Model.Comments.Count）</h2>
+
+                    @if (Model.Comments.Count == 0)
+                    {
+                        <p class="admin-muted">这篇文章还没有评论。</p>
+                    }
+                    else
+                    {
+                        <ul class="admin-comments">
+                            @foreach (var comment in Model.Comments)
+                            {
+                                <li>
+                                    <div class="admin-comment-head">
+                                        <span class="admin-id">#@comment.Id</span>
+                                        <strong>@(comment.Username ?? "匿名")</strong>
+                                        <form method="post" asp-controller="Admin" asp-action="DeleteComment"
+                                              onsubmit="return confirm('删除评论 #@comment.Id？');">
+                                            <input type="hidden" name="commentId" value="@comment.Id"/>
+                                            <input type="hidden" name="articleId" value="@Model.Form.OriginalId"/>
+                                            <button type="submit" class="admin-link">删除</button>
+                                        </form>
+                                    </div>
+                                    <p class="admin-comment-body">@comment.Content</p>
+                                </li>
+                            }
+                        </ul>
+                    }
+
+                    <form method="post" asp-controller="Admin" asp-action="AddComment">
+                        <input type="hidden" asp-for="Comment.ArticleId"/>
+
+                        <label asp-for="Comment.Username"></label>
+                        <input asp-for="Comment.Username" type="text" autocomplete="off" placeholder="留空则显示为匿名"/>
+                        <span asp-validation-for="Comment.Username" class="admin-error"></span>
+
+                        <label asp-for="Comment.Content"></label>
+                        <textarea asp-for="Comment.Content" class="admin-comment-input"
+                                  placeholder="写点什么……"></textarea>
+                        <span asp-validation-for="Comment.Content" class="admin-error"></span>
+
+                        <div class="admin-actions">
+                            <button type="submit">添加评论</button>
+                        </div>
+                    </form>
+                </section>
+            }
+        </div>
+    </div>
+    }
+    else
+    {
+        <section class="admin-card admin-settings-card" style="margin-top: 1.25rem;">
+            <h2>CommonSettings</h2>
+
+            <form method="post" asp-controller="Admin" asp-action="SaveSettings">
+                <div asp-validation-summary="ModelOnly" class="admin-summary"></div>
+
+                <table class="admin-settings">
+                    <thead>
+                    <tr>
+                        <th>成员</th>
+                        <th>值</th>
+                        <th>说明</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    @foreach (var field in Model.SettingFields)
+                    {
+                        <tr>
+                            <td>
+                                <code>@field.Name</code>
+                                <div class="admin-settings-type">
+                                    @field.Type.Name · @(field.Editable ? "可修改" : "只读")
+                                </div>
+                            </td>
+                            <td>
+                                @if (!field.Editable)
+                                {
+                                    <span class="admin-settings-value">
+                                        @(field.Value is null ? "null" : field.Value.ToString())
+                                    </span>
+                                }
+                                else if (field.Kind == "bool")
+                                {
+                                    <select class="admin-settings-input" name="Values[@field.Name]">
+                                        <option value="true" selected="@(field.Value is true)">true（开启）</option>
+                                        <option value="false" selected="@(field.Value is false)">false（关闭）</option>
+                                    </select>
+                                }
+                                else if (field.Kind == "number")
+                                {
+                                    <input class="admin-settings-input" type="number"
+                                           name="Values[@field.Name]" value="@field.Value"/>
+                                }
+                                else
+                                {
+                                    <input class="admin-settings-input" type="text"
+                                           name="Values[@field.Name]" value="@field.Value"/>
+                                }
+                            </td>
+                            <td>@field.Description</td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+
+                <div class="admin-actions">
+                    <button type="submit" class="primary">应用</button>
+                </div>
+            </form>
+
+            <p class="admin-hint">
+                这些属性的默认值来自 <code>Src/CommonSettings.cs</code>，也就是「配置文件」本身；
+                这里只做<b>运行期覆盖</b>，不写库不落盘，重启或重新编译后自动回到源代码里的值。
+                只有带公开 <code>set</code> 的属性会出现输入框。
+            </p>
+        </section>
+    }
+</div>
+
+@section Scripts
+{
+    <script src="~/lib/marked/marked.umd.js"></script>
+    <script src="~/lib/dompurify/purify.min.js"></script>
+    <script>
+        (function () {
+            var input = document.querySelector('textarea[name="Form.Content"]');
+            const preview = document.getElementById('md-preview');
+            if (!input || !preview || !window.marked || !window.DOMPurify) return;
+
+            // 与服务端 Markdig 默认管线保持一致：CommonMark，不开 GFM 表格/删除线
+            window.marked.setOptions({ gfm: false, breaks: false });
+
+            let timer = null;
+
+            function render() {
+                const text = input.value;
+                if (!text.trim()) {
+                    preview.innerHTML = '<p class="admin-preview-empty">这里会显示 Markdown 预览。</p>';
+                    return;
+                }
+
+                preview.innerHTML = window.DOMPurify.sanitize(window.marked.parse(text));
+            }
+
+            function schedule() {
+                clearTimeout(timer);
+                timer = setTimeout(render, 120);
+            }
+
+            input.addEventListener('input', schedule);
+            render();
+        })();
+    </script>
+    <script>
+        (function () {
+            const rows = document.getElementById('meta-rows');
+            const addButton = document.getElementById('meta-add');
+            if (!rows || !addButton) return;
+
+            function renumber() {
+                Array.prototype.forEach.call(rows.querySelectorAll('.admin-meta-row'), function (row, index) {
+                    Array.prototype.forEach.call(row.querySelectorAll('input[data-field]'), function (input) {
+                        input.name = 'Form.Metadata[' + index + '].' + input.dataset.field;
+                    });
+                });
+            }
+
+            addButton.addEventListener('click', function () {
+                const row = document.createElement('div');
+                row.className = 'admin-meta-row';
+                row.innerHTML =
+                    '<input type="text" data-field="Key" placeholder="key">' +
+                    '<input type="text" data-field="Value" placeholder="value">' +
+                    '<button type="button" class="admin-meta-remove" title="删除这一项" aria-label="删除这一项">×</button>';
+                rows.appendChild(row);
+                renumber();
+                const first = row.querySelector('input');
+                if (first) first.focus();
+            });
+
+            rows.addEventListener('click', function (event) {
+                const button = event.target.closest('.admin-meta-remove');
+                if (!button) return;
+                const row = button.closest('.admin-meta-row');
+                if (row) row.remove();
+                renumber();
+            });
+        })();
+    </script>
+}

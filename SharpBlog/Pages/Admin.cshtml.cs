@@ -25,9 +25,23 @@ public class Admin(BlogDbContext dbContext) : PageModel
 
     public string? Status { get; private set; }
 
-    public async Task OnGetAsync(int? id)
+    /// <summary>"articles" | "settings"</summary>
+    public string Tab { get; private set; } = "articles";
+
+    /// <summary>「设置」tab：CommonSettings 里带 setter 的静态属性。</summary>
+    public IReadOnlyList<BlogSettingsEditor.SettingField> SettingFields { get; private set; } = [];
+
+    public async Task OnGetAsync(int? id, string? tab)
     {
         Status = TempData["Status"] as string;
+        Tab = string.Equals(tab, "settings", StringComparison.OrdinalIgnoreCase) ? "settings" : "articles";
+
+        if (Tab == "settings")
+        {
+            SettingFields = BlogSettingsEditor.Describe();
+            return;
+        }
+
         await LoadListsAsync(id);
 
         if (id is > 0)
@@ -89,6 +103,28 @@ public class Admin(BlogDbContext dbContext) : PageModel
 
         TempData["Status"] = $"已创建文章 #{created.Id}。";
         return RedirectToPage("/Admin", new { id = created.Id });
+    }
+
+    // ---------- 应用设置（仅本次运行有效） ----------
+
+    public IActionResult OnPostSaveSettings([Bind(Prefix = "Values")] Dictionary<string, string?> values)
+    {
+        var errors = BlogSettingsEditor.Apply(values);
+
+        if (errors.Count > 0)
+        {
+            foreach (var error in errors)
+            {
+                ModelState.AddModelError(string.Empty, error);
+            }
+
+            Tab = "settings";
+            SettingFields = BlogSettingsEditor.Describe();
+            return Page();
+        }
+
+        TempData["Status"] = "已应用到本次运行；重启或重新编译后会回到源代码里的值。";
+        return RedirectToPage("/Admin", new { tab = "settings" });
     }
 
     // ---------- 删除文章 ----------
@@ -164,6 +200,7 @@ public class Admin(BlogDbContext dbContext) : PageModel
             Content = NewComment.Content.Trim(),
             Username = string.IsNullOrWhiteSpace(NewComment.Username) ? null : NewComment.Username.Trim(),
             ArticleId = NewComment.ArticleId,
+            Created = DateTime.Now,
         });
         await _db.SaveChangesAsync(cancellationToken);
 

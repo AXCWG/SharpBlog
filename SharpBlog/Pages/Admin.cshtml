@@ -53,6 +53,93 @@
         font-size: .86rem;
     }
 
+    .admin-tabs {
+        display: flex;
+        gap: .25rem;
+        margin-top: 1.25rem;
+        border-bottom: 1px solid #e3e3e8;
+    }
+
+    .admin-tab {
+        padding: .55rem 1rem;
+        border: 1px solid transparent;
+        border-bottom: 0;
+        border-radius: 6px 6px 0 0;
+        color: #5a5a66;
+        font-size: .9rem;
+        text-decoration: none;
+    }
+
+    .admin-tab:hover { background: #f6f6f9; color: #2b2b33; }
+
+    .admin-tab.active {
+        margin-bottom: -1px;
+        border-color: #e3e3e8;
+        background: #fff;
+        color: #1b1b1f;
+        font-weight: 600;
+    }
+
+    .admin-settings {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: .88rem;
+    }
+
+    .admin-settings th,
+    .admin-settings td {
+        padding: .6rem .5rem;
+        border-top: 1px solid #eeeef3;
+        text-align: left;
+        vertical-align: top;
+    }
+
+    .admin-settings thead th {
+        border-top: 0;
+        color: #6b6b76;
+        font-size: .78rem;
+        font-weight: 600;
+    }
+
+    .admin-settings code {
+        padding: .1em .35em;
+        border-radius: 3px;
+        background: #f2f2f6;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+        font-size: .85em;
+    }
+
+    .admin-settings-input {
+        box-sizing: border-box;
+        width: 100%;
+        max-width: 18rem;
+        padding: .45rem .55rem;
+        border: 1px solid #d5d5dd;
+        border-radius: 6px;
+        background: #fcfcfd;
+        color: inherit;
+        font: inherit;
+        font-size: .86rem;
+    }
+
+    .admin-settings-input:focus {
+        border-color: #9db4ff;
+        outline: 2px solid #9db4ff;
+        outline-offset: 1px;
+    }
+
+    .admin-settings-type {
+        margin-top: .2rem;
+        color: #8a8a95;
+        font-size: .72rem;
+    }
+
+    .admin-settings .admin-settings-value {
+        font-variant-numeric: tabular-nums;
+    }
+
+    .admin-settings-card .admin-hint { margin-top: 1rem; }
+
     .admin-grid {
         display: grid;
         grid-template-columns: minmax(0, 260px) minmax(0, 1fr);
@@ -150,6 +237,110 @@
         color: #8a6d1f;
         font-size: .72rem;
         vertical-align: 1px;
+    }
+
+    .admin .admin-editor {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        gap: .75rem;
+        align-items: stretch;
+    }
+
+    .admin .admin-editor textarea {
+        min-height: 20rem;
+    }
+
+    .admin .admin-preview {
+        box-sizing: border-box;
+        min-height: 20rem;
+        max-height: 40rem;
+        overflow: auto;
+        padding: 1rem 1.1rem;
+        border: 1px solid #e3e3e8;
+        border-radius: 6px;
+        background: #fcfcfd;
+        color: #1b1b1f;
+        font-family: "Times New Roman", "SimSun", "宋体", "Songti SC", "STSong",
+                     "Noto Serif CJK SC", serif;
+        font-size: 12pt;
+        line-height: 1.5;
+        word-break: break-word;
+    }
+
+    .admin .admin-preview > :first-child { margin-top: 0; }
+
+    .admin .admin-preview p {
+        margin: 0 0 .6em;
+        text-indent: 2em;
+    }
+
+    .admin .admin-preview h1,
+    .admin .admin-preview h2,
+    .admin .admin-preview h3,
+    .admin .admin-preview h4,
+    .admin .admin-preview h5,
+    .admin .admin-preview h6 {
+        margin: 1em 0 .4em;
+        font-family: inherit;
+        font-weight: 700;
+        line-height: 1.3;
+        text-align: center;
+        letter-spacing: .04em;
+    }
+
+    .admin .admin-preview h1 { font-size: 22pt; }
+    .admin .admin-preview h2,
+    .admin .admin-preview h3,
+    .admin .admin-preview h4,
+    .admin .admin-preview h5,
+    .admin .admin-preview h6 { font-size: 15pt; }
+
+    .admin .admin-preview ul,
+    .admin .admin-preview ol {
+        margin: 0 0 .6em;
+        padding-left: 1.6em;
+    }
+
+    .admin .admin-preview li { text-indent: 0; }
+
+    .admin .admin-preview code {
+        padding: .1em .3em;
+        border-radius: 3px;
+        background: #f2f2f6;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+        font-size: .85em;
+    }
+
+    .admin .admin-preview pre {
+        margin: 0 0 .6em;
+        padding: .7rem .8rem;
+        overflow: auto;
+        border: 1px solid #e9e9ef;
+        border-radius: 6px;
+        background: #f6f6f9;
+    }
+
+    .admin .admin-preview pre code {
+        padding: 0;
+        background: none;
+    }
+
+    .admin .admin-preview blockquote {
+        margin: 0 0 .6em;
+        padding: .2em .9em;
+        border-left: 3px solid #d8d8e2;
+        color: #4a4a55;
+    }
+
+    .admin .admin-preview a { color: #2b3a67; }
+    .admin .admin-preview img { max-width: 100%; }
+    .admin .admin-preview hr { border: 0; border-top: 1px solid #e3e3e8; margin: 1em 0; }
+
+    .admin .admin-preview-empty {
+        margin: 0;
+        color: #8a8a95;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", sans-serif;
+        font-size: .85rem;
     }
 
     .admin .admin-meta {
@@ -373,7 +564,96 @@
     }
 
     @@media (max-width: 860px) {
-        .admin-grid { grid-template-columns: 1fr; }
+        .admin-tabs {
+        display: flex;
+        gap: .25rem;
+        margin-top: 1.25rem;
+        border-bottom: 1px solid #e3e3e8;
+    }
+
+    .admin-tab {
+        padding: .55rem 1rem;
+        border: 1px solid transparent;
+        border-bottom: 0;
+        border-radius: 6px 6px 0 0;
+        color: #5a5a66;
+        font-size: .9rem;
+        text-decoration: none;
+    }
+
+    .admin-tab:hover { background: #f6f6f9; color: #2b2b33; }
+
+    .admin-tab.active {
+        margin-bottom: -1px;
+        border-color: #e3e3e8;
+        background: #fff;
+        color: #1b1b1f;
+        font-weight: 600;
+    }
+
+    .admin-settings {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: .88rem;
+    }
+
+    .admin-settings th,
+    .admin-settings td {
+        padding: .6rem .5rem;
+        border-top: 1px solid #eeeef3;
+        text-align: left;
+        vertical-align: top;
+    }
+
+    .admin-settings thead th {
+        border-top: 0;
+        color: #6b6b76;
+        font-size: .78rem;
+        font-weight: 600;
+    }
+
+    .admin-settings code {
+        padding: .1em .35em;
+        border-radius: 3px;
+        background: #f2f2f6;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+        font-size: .85em;
+    }
+
+    .admin-settings-input {
+        box-sizing: border-box;
+        width: 100%;
+        max-width: 18rem;
+        padding: .45rem .55rem;
+        border: 1px solid #d5d5dd;
+        border-radius: 6px;
+        background: #fcfcfd;
+        color: inherit;
+        font: inherit;
+        font-size: .86rem;
+    }
+
+    .admin-settings-input:focus {
+        border-color: #9db4ff;
+        outline: 2px solid #9db4ff;
+        outline-offset: 1px;
+    }
+
+    .admin-settings-type {
+        margin-top: .2rem;
+        color: #8a8a95;
+        font-size: .72rem;
+    }
+
+    .admin-settings .admin-settings-value {
+        font-variant-numeric: tabular-nums;
+    }
+
+    .admin-settings-card .admin-hint { margin-top: 1rem; }
+
+    .admin-grid { grid-template-columns: 1fr; }
+        .admin .admin-editor { grid-template-columns: 1fr; }
+        .admin .admin-preview { min-height: 10rem; max-height: 24rem; }
         .admin-list { max-height: 16rem; }
         .admin textarea { min-height: 12rem; }
     }
@@ -384,7 +664,9 @@
         <div>
             <h1>控制台</h1>
             <p class="admin-sub">
-                @(Model.IsEditing ? $"编辑文章 #{Model.Form.OriginalId}" : "新建文章") · @CommonSettings.BlogName
+                @(Model.Tab == "settings"
+                    ? "站点设置"
+                    : Model.IsEditing ? $"编辑文章 #{Model.Form.OriginalId}" : "新建文章") · @CommonSettings.BlogName
             </p>
         </div>
         <div class="admin-head-actions">
@@ -398,6 +680,13 @@
         <div class="admin-note">@status</div>
     }
 
+    <nav class="admin-tabs">
+        <a class="admin-tab @(Model.Tab == "articles" ? "active" : null)" asp-page="Admin">文章</a>
+        <a class="admin-tab @(Model.Tab == "settings" ? "active" : null)" asp-page="Admin" asp-route-tab="settings">设置</a>
+    </nav>
+
+    @if (Model.Tab == "articles")
+    {
     <div class="admin-grid">
         <aside class="admin-card">
             <h2>文章（@Model.ArticleList.Count）</h2>
@@ -454,8 +743,11 @@
                     </label>
 
                     <label asp-for="Form.Content"></label>
-                    <textarea asp-for="Form.Content" placeholder="# 标题&#10;&#10;正文支持 Markdown。"></textarea>
-                    <p class="admin-hint">支持 Markdown：标题、列表、代码块、引用等。</p>
+                    <div class="admin-editor">
+                        <textarea asp-for="Form.Content" placeholder="# 标题&#10;&#10;正文支持 Markdown。"></textarea>
+                        <div class="admin-preview" id="md-preview" aria-live="polite"></div>
+                    </div>
+                    <p class="admin-hint">左边写，右边实时预览；发布时仍由服务端 Markdig 渲染。</p>
                     <span asp-validation-for="Form.Content" class="admin-error"></span>
 
                     <label>其他元数据</label>
@@ -554,14 +846,116 @@
             }
         </div>
     </div>
+    }
+    else
+    {
+        <section class="admin-card admin-settings-card" style="margin-top: 1.25rem;">
+            <h2>CommonSettings</h2>
+
+            <form method="post" asp-page-handler="SaveSettings">
+                <div asp-validation-summary="ModelOnly" class="admin-summary"></div>
+
+                <table class="admin-settings">
+                    <thead>
+                    <tr>
+                        <th>成员</th>
+                        <th>值</th>
+                        <th>说明</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    @foreach (var field in Model.SettingFields)
+                    {
+                        <tr>
+                            <td>
+                                <code>@field.Name</code>
+                                <div class="admin-settings-type">
+                                    @field.Type.Name · @(field.Editable ? "可修改" : "只读")
+                                </div>
+                            </td>
+                            <td>
+                                @if (!field.Editable)
+                                {
+                                    <span class="admin-settings-value">
+                                        @(field.Value is null ? "null" : field.Value.ToString())
+                                    </span>
+                                }
+                                else if (field.Kind == "bool")
+                                {
+                                    <select class="admin-settings-input" name="Values[@field.Name]">
+                                        <option value="true" selected="@(field.Value is true)">true（开启）</option>
+                                        <option value="false" selected="@(field.Value is false)">false（关闭）</option>
+                                    </select>
+                                }
+                                else if (field.Kind == "number")
+                                {
+                                    <input class="admin-settings-input" type="number"
+                                           name="Values[@field.Name]" value="@field.Value"/>
+                                }
+                                else
+                                {
+                                    <input class="admin-settings-input" type="text"
+                                           name="Values[@field.Name]" value="@field.Value"/>
+                                }
+                            </td>
+                            <td>@field.Description</td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+
+                <div class="admin-actions">
+                    <button type="submit" class="primary">应用</button>
+                </div>
+            </form>
+
+            <p class="admin-hint">
+                这些属性的默认值来自 <code>Src/CommonSettings.cs</code>，也就是「配置文件」本身；
+                这里只做<b>运行期覆盖</b>，不写库不落盘，重启或重新编译后自动回到源代码里的值。
+                只有带公开 <code>set</code> 的属性会出现输入框。
+            </p>
+        </section>
+    }
 </div>
 
 @section Scripts
 {
+    <script src="~/lib/marked/marked.umd.js"></script>
+    <script src="~/lib/dompurify/purify.min.js"></script>
     <script>
         (function () {
-            var rows = document.getElementById('meta-rows');
-            var addButton = document.getElementById('meta-add');
+            var input = document.querySelector('textarea[name="Form.Content"]');
+            const preview = document.getElementById('md-preview');
+            if (!input || !preview || !window.marked || !window.DOMPurify) return;
+
+            // 与服务端 Markdig 默认管线保持一致：CommonMark，不开 GFM 表格/删除线
+            window.marked.setOptions({ gfm: false, breaks: false });
+
+            let timer = null;
+
+            function render() {
+                const text = input.value;
+                if (!text.trim()) {
+                    preview.innerHTML = '<p class="admin-preview-empty">这里会显示 Markdown 预览。</p>';
+                    return;
+                }
+
+                preview.innerHTML = window.DOMPurify.sanitize(window.marked.parse(text));
+            }
+
+            function schedule() {
+                clearTimeout(timer);
+                timer = setTimeout(render, 120);
+            }
+
+            input.addEventListener('input', schedule);
+            render();
+        })();
+    </script>
+    <script>
+        (function () {
+            const rows = document.getElementById('meta-rows');
+            const addButton = document.getElementById('meta-add');
             if (!rows || !addButton) return;
 
             function renumber() {
@@ -573,7 +967,7 @@
             }
 
             addButton.addEventListener('click', function () {
-                var row = document.createElement('div');
+                const row = document.createElement('div');
                 row.className = 'admin-meta-row';
                 row.innerHTML =
                     '<input type="text" data-field="Key" placeholder="key">' +
@@ -581,14 +975,14 @@
                     '<button type="button" class="admin-meta-remove" title="删除这一项" aria-label="删除这一项">×</button>';
                 rows.appendChild(row);
                 renumber();
-                var first = row.querySelector('input');
+                const first = row.querySelector('input');
                 if (first) first.focus();
             });
 
             rows.addEventListener('click', function (event) {
-                var button = event.target.closest('.admin-meta-remove');
+                const button = event.target.closest('.admin-meta-remove');
                 if (!button) return;
-                var row = button.closest('.admin-meta-row');
+                const row = button.closest('.admin-meta-row');
                 if (row) row.remove();
                 renumber();
             });
