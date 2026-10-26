@@ -1,5 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using SharpBlog;
+using SharpBlog.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
 

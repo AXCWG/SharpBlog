@@ -1,13 +1,8 @@
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq.Expressions;
-using System.Text.Json;
 using JsonProperty;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Diagnostics;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
-namespace SharpBlog;
+namespace SharpBlog.Mvc;
 
 public class BlogDbContext : DbContext
 {

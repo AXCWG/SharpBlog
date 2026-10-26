@@ -1,4 +1,4 @@
-namespace SharpBlog;
+namespace SharpBlog.Mvc;
 
 public static class CommonSettings
 {

@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using SharpBlog;
 using SharpBlog.Mvc.Models;
 
 namespace SharpBlog.Mvc.Controllers;
