@@ -1,14 +1,15 @@
+@using Microsoft.EntityFrameworkCore
 @using SharpBlog.Mvc
 @inject BlogDbContext DbContext
 @model string
 @{
-    
+    var config = DbContext.Configs.AsNoTracking().FirstOrDefault()?.Configuration;
 }
     <div class="container page-container">
         <div class="page-nav">
             <a asp-action="Index">返回主页</a>
         </div>
-        <h1>All tag "@Model" of @CommonSettings.BlogName</h1>
+        <h1>All tag "@Model" of @(config?.BlogName ?? "SharpBlog")</h1>
         <ul>
             @foreach (var article in DbContext.Articles.AsEnumerable().Where(i=>i.Tags.Contains(Model)))
             {

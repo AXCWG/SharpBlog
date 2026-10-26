@@ -49,6 +49,22 @@ await using (var asyncServiceScope = app.Services.CreateAsyncScope())
             });
             blogDbContext.SaveChanges();
         }
+
+        if (!blogDbContext.Configs.Any())
+        {
+            blogDbContext.Configs.Add(new()
+            {
+                Configuration = new BlogDbContext.Config.ConfigType
+                {
+                    BlogName = "SharpBlog",
+                    TitleAppendix = "SharpBlog",
+                    EnableCommentSection = true,
+                    ConcatCount = 10
+                }
+            });
+            blogDbContext.SaveChanges();
+        }
+
     }
     
 }

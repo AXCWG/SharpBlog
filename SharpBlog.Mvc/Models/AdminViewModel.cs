@@ -17,6 +17,15 @@ public class AdminViewModel
 
     public IReadOnlyList<CommentView> Comments { get; set; } = [];
 
+    /// <summary>数据库里那行配置（只读快照）。</summary>
+    public BlogDbContext.Config.ConfigType Config { get; set; } = new()
+    {
+        BlogName = "SharpBlog",
+        TitleAppendix = "SharpBlog",
+        EnableCommentSection = true,
+        ConcatCount = 10,
+    };
+
     public IReadOnlyList<BlogSettingsEditor.SettingField> SettingFields { get; set; } = [];
 
     public string? Status { get; set; }

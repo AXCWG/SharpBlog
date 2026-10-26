@@ -3,7 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using SharpBlog;
+using SharpBlog.Mvc;
 
 #nullable disable
 
@@ -17,7 +17,7 @@ namespace SharpBlog.Mvc.Migrations
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "10.0.14");
 
-            modelBuilder.Entity("SharpBlog.Article", b =>
+            modelBuilder.Entity("SharpBlog.Mvc.BlogDbContext+Article", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -52,7 +52,7 @@ namespace SharpBlog.Mvc.Migrations
                     b.ToTable("Articles");
                 });
 
-            modelBuilder.Entity("SharpBlog.Comment", b =>
+            modelBuilder.Entity("SharpBlog.Mvc.BlogDbContext+Comment", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -80,9 +80,24 @@ namespace SharpBlog.Mvc.Migrations
                     b.ToTable("Comments");
                 });
 
-            modelBuilder.Entity("SharpBlog.Comment", b =>
+            modelBuilder.Entity("SharpBlog.Mvc.BlogDbContext+Config", b =>
                 {
-                    b.HasOne("SharpBlog.Article", "Article")
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Configuration")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Configs");
+                });
+
+            modelBuilder.Entity("SharpBlog.Mvc.BlogDbContext+Comment", b =>
+                {
+                    b.HasOne("SharpBlog.Mvc.BlogDbContext+Article", "Article")
                         .WithMany("Comments")
                         .HasForeignKey("ArticleId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -91,7 +106,7 @@ namespace SharpBlog.Mvc.Migrations
                     b.Navigation("Article");
                 });
 
-            modelBuilder.Entity("SharpBlog.Article", b =>
+            modelBuilder.Entity("SharpBlog.Mvc.BlogDbContext+Article", b =>
                 {
                     b.Navigation("Comments");
                 });

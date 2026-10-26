@@ -666,7 +666,7 @@
             <p class="admin-sub">
                 @(Model.Tab == "settings"
                     ? "站点设置"
-                    : Model.IsEditing ? $"编辑文章 #{Model.Form.OriginalId}" : "新建文章") · @CommonSettings.BlogName
+                    : Model.IsEditing ? $"编辑文章 #{Model.Form.OriginalId}" : "新建文章") · @Model.Config.BlogName
             </p>
         </div>
         <div class="admin-head-actions">
@@ -850,7 +850,7 @@
     else
     {
         <section class="admin-card admin-settings-card" style="margin-top: 1.25rem;">
-            <h2>CommonSettings</h2>
+            <h2>站点设置</h2>
 
             <form method="post" asp-controller="Admin" asp-action="SaveSettings">
                 <div asp-validation-summary="ModelOnly" class="admin-summary"></div>
@@ -858,7 +858,7 @@
                 <table class="admin-settings">
                     <thead>
                     <tr>
-                        <th>成员</th>
+                        <th>配置项</th>
                         <th>值</th>
                         <th>说明</th>
                     </tr>
@@ -869,18 +869,10 @@
                         <tr>
                             <td>
                                 <code>@field.Name</code>
-                                <div class="admin-settings-type">
-                                    @field.Type.Name · @(field.Editable ? "可修改" : "只读")
-                                </div>
+                                <div class="admin-settings-type">@field.Type.Name</div>
                             </td>
                             <td>
-                                @if (!field.Editable)
-                                {
-                                    <span class="admin-settings-value">
-                                        @(field.Value is null ? "null" : field.Value.ToString())
-                                    </span>
-                                }
-                                else if (field.Kind == "bool")
+                                @if (field.Kind == "bool")
                                 {
                                     <select class="admin-settings-input" name="Values[@field.Name]">
                                         <option value="true" selected="@(field.Value is true)">true（开启）</option>
@@ -901,18 +893,22 @@
                             <td>@field.Description</td>
                         </tr>
                     }
+                    <tr>
+                        <td><code>AdminString</code></td>
+                        <td class="admin-settings-value">@Configuration.AdminString</td>
+                        <td>后台路由片段，编译期常量，不在这里改</td>
+                    </tr>
                     </tbody>
                 </table>
 
                 <div class="admin-actions">
-                    <button type="submit" class="primary">应用</button>
+                    <button type="submit" class="primary">保存</button>
                 </div>
             </form>
 
             <p class="admin-hint">
-                这些属性的默认值来自 <code>Src/CommonSettings.cs</code>，也就是「配置文件」本身；
-                这里只做<b>运行期覆盖</b>，不写库不落盘，重启或重新编译后自动回到源代码里的值。
-                只有带公开 <code>set</code> 的属性会出现输入框。
+                配置项按 <code>Config.ConfigType</code> 的属性自动生成——给它加一个属性，这里就多一行，不用改页面；
+                保存后写入数据库 <code>Configs</code> 表，页面每次直接从库里读。
             </p>
         </section>
     }

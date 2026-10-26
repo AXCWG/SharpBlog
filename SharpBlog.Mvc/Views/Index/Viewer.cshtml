@@ -10,6 +10,14 @@
     var tbRender = sanitizer.Sanitize(rawHtml);
 }
     <style>
+        .comment-error {
+            display: block;
+            margin-top: .25rem;
+            color: #b3261e;
+            font-size: .9rem;
+            line-height: 1.4;
+        }
+        .comment-error:empty { display: none; }
         /* ===== 论文版式：只作用于本页，不动 _Layout / site.css ===== */
         .paper-stage {
             padding-top: 0;                  /* 左右留白沿用 .page-container */
@@ -177,9 +185,12 @@
     </div>
     <div class="mx-auto" style="width: 210mm;                    /* A4 宽 */max-width: 100%;">
         <div>回复</div>
-        <form class="comment-form" method="post" asp-page-handler="AddComment" >
-            <input name="AddComment.Name" class="comment-input" placeholder="名字"/>
-            <input name="AddComment.Content" class="comment-input" placeholder="评论"/>
+        <form id="form" asp-fragment="form" class="comment-form" method="post" asp-action="UploadComment" asp-route-id="@Model.Article.Id">
+            <div asp-validation-summary="All"></div>
+            <input class="comment-input" asp-for="Name" placeholder="名字"/>
+            <span asp-validation-for="Name" class="comment-error"></span>
+            <input class="comment-input" asp-for="Content" placeholder="评论"/>
+            <span asp-validation-for="Content" class="comment-error"></span>
             <button class="comment-submit" type="submit">发送</button>
         </form>
         @if (Model.Article.Comments.Count == 0)

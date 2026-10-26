@@ -4,7 +4,7 @@ using SharpBlog.Mvc.Models;
 
 namespace SharpBlog.Mvc.Controllers;
 
-[Route(CommonSettings.AdminString)]
+[Route(Configuration.AdminString)]
 public class AdminController(BlogDbContext db) : Controller
 {
     private readonly BlogDbContext _db = db;
@@ -47,7 +47,7 @@ public class AdminController(BlogDbContext db) : Controller
             return RedirectToAction(nameof(Index), new { id = article.Id });
         }
 
-        var created = new Article
+        var created = new BlogDbContext.Article
         {
             Title = form.Title.Trim(),
             Content = form.Content,
@@ -97,7 +97,7 @@ public class AdminController(BlogDbContext db) : Controller
             return RedirectToAction(nameof(Index));
         }
 
-        var copy = new Article
+        var copy = new BlogDbContext.Article
         {
             Title = $"{source.Title}（副本）",
             Content = source.Content,
@@ -132,7 +132,7 @@ public class AdminController(BlogDbContext db) : Controller
             return View("Index", Build(comment.ArticleId, "articles"));
         }
 
-        _db.Comments.Add(new Comment
+        _db.Comments.Add(new BlogDbContext.Comment
         {
             ArticleId = comment.ArticleId,
             Username = string.IsNullOrWhiteSpace(comment.Username) ? null : comment.Username.Trim(),
@@ -167,9 +167,17 @@ public class AdminController(BlogDbContext db) : Controller
 
     [HttpPost("SaveSettings")]
     [ValidateAntiForgeryToken]
-    public IActionResult SaveSettings([Bind(Prefix = "Values")] Dictionary<string, string?> values)
+    public async Task<IActionResult> SaveSettings(
+        [Bind(Prefix = "Values")] Dictionary<string, string?> values,
+        CancellationToken cancellationToken)
     {
-        var errors = BlogSettingsEditor.Apply(values);
+        var row = await _db.Configs.FirstOrDefaultAsync(cancellationToken);
+        var isNew = row is null;
+        row ??= new BlogDbContext.Config { Configuration = DefaultConfig() };
+
+        // 值转换属性是按引用比较的，必须换一个新实例，EF 才会认为它变了
+        var updated = BlogSettingsEditor.Clone(row.Configuration);
+        var errors = BlogSettingsEditor.Apply(updated, values);
 
         if (errors.Count > 0)
         {
@@ -178,26 +186,39 @@ public class AdminController(BlogDbContext db) : Controller
                 ModelState.AddModelError(string.Empty, error);
             }
 
-            return View("Index", Build(null, "settings"));
+            return View("Index", BuildConfigPreview(values));
         }
 
-        TempData["Status"] = "已应用到本次运行；重启或重新编译后会回到源代码里的值。";
+        row.Configuration = updated;
+
+        if (isNew)
+        {
+            _db.Configs.Add(row);
+        }
+
+        await _db.SaveChangesAsync(cancellationToken);
+
+        TempData["Status"] = "设置已保存到数据库。";
         return RedirectToAction(nameof(Index), new { tab = "settings" });
     }
 
     // ---------- 视图数据 ----------
 
-    private AdminViewModel Build(int? id, string? tab, AdminViewModel.EditorForm? form = null)
+    private AdminViewModel Build(
+        int? id,
+        string? tab,
+        AdminViewModel.EditorForm? form = null)
     {
         var model = new AdminViewModel
         {
             Tab = string.Equals(tab, "settings", StringComparison.OrdinalIgnoreCase) ? "settings" : "articles",
             Status = TempData["Status"] as string,
+            Config = LoadConfig(),
         };
 
         if (model.Tab == "settings")
         {
-            model.SettingFields = BlogSettingsEditor.Describe();
+            model.SettingFields = BlogSettingsEditor.Describe(model.Config);
             return model;
         }
 
@@ -245,6 +266,33 @@ public class AdminController(BlogDbContext db) : Controller
         }
 
         return model;
+    }
+
+    /// <summary>从数据库读出唯一那行配置（只读）。</summary>
+    private BlogDbContext.Config.ConfigType LoadConfig() =>
+        _db.Configs.AsNoTracking().FirstOrDefault()?.Configuration ?? DefaultConfig();
+
+    private static BlogDbContext.Config.ConfigType DefaultConfig() => new()
+    {
+        BlogName = "SharpBlog",
+        TitleAppendix = "SharpBlog",
+        EnableCommentSection = true,
+        ConcatCount = 10,
+    };
+
+    /// <summary>校验失败时用一份克隆回显用户输入，不污染被跟踪的实体。</summary>
+    private AdminViewModel BuildConfigPreview(IReadOnlyDictionary<string, string?> values)
+    {
+        var config = BlogSettingsEditor.Clone(LoadConfig());
+        BlogSettingsEditor.Apply(config, values, applyPartial: true);
+
+        return new AdminViewModel
+        {
+            Tab = "settings",
+            Config = config,
+            SettingFields = BlogSettingsEditor.Describe(config),
+            Status = TempData["Status"] as string,
+        };
     }
 
     private List<AdminViewModel.CommentView> LoadComments(int articleId) => _db.Comments
